@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: pay
-#          image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/lecture-pay:latest
-          image: username/pay:latest
+          image: 855196134209.dkr.ecr.us-east-1.amazonaws.com/lecture-main/pay:latest 
+#          image: username/pay:latest
           ports:
             - containerPort: 8080
           resources:
