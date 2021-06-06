@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: course
-          image: 855196134209.dkr.ecr.us-east-1.amazonaws.com/lecture-main/course:latest 
+          image: 855196134209.dkr.ecr.us-east-1.amazonaws.com/lecture-course:latest 
 #          image: username/course:latest
           ports:
             - containerPort: 8080
