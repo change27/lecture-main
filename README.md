@@ -267,38 +267,58 @@ package lecture;
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 
+import lecture.external.Payment;
+import lecture.external.PaymentService;
+
+
 @Entity
-@Table(name = "Course_table")
-public class Course {
+@Table(name="Advertisement_table")
+public class Advertisement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private String name;
-    private String teacher;
-    private Long fee;
-    private String textBook;
+    private Long courseId;
+    private String status;
 
     @PostPersist
-    public void onPostPersist() {
-        CourseRegistered courseRegistered = new CourseRegistered();
-        BeanUtils.copyProperties(this, courseRegistered);
-        courseRegistered.publishAfterCommit();
-    }
+    public void onPostPersist() throws Exception{
+        Payment payment = new Payment();
+        // mappings goes here
+        payment.setAdId(this.getId());
+        payment.setCourseId(this.getCourseId());;
+        payment.setStatus("PAYMENT_COMPLETED");
+        
+        System.out.println("*****************onPostPersist");
+        if (AdvertisementApplication.applicationContext.getBean(PaymentService.class).pay(payment)) {
+            AdRegistered adRegistered = new AdRegistered();
+            BeanUtils.copyProperties(this, adRegistered);
+            adRegistered.publishAfterCommit();
+        }else {
+            throw new RollbackException("Failed during payment");
+        }
 
-    @PostUpdate
-    public void onPostUpdate() {
-        CourseModified courseModified = new CourseModified();
-        BeanUtils.copyProperties(this, courseModified);
-        courseModified.publishAfterCommit();
+
+        //Following code causes dependency to external APIs
+        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
+
+ //       lecture.external.Payment payment = new lecture.external.Payment();
+ //       // mappings goes here
+ //       Application.applicationContext.getBean(lecture.external.PaymentService.class)
+ //           .pay(payment);
+
+
     }
 
     @PreRemove
-    public void onPreRemove() {
-        CourseDeleted courseDeleted = new CourseDeleted();
-        BeanUtils.copyProperties(this, courseDeleted);
-        courseDeleted.publishAfterCommit();
+    public void onPreRemove(){
+        AdCanceled adCanceled = new AdCanceled();
+        BeanUtils.copyProperties(this, adCanceled);
+        adCanceled.publishAfterCommit();
+
+        System.out.println("*****************onPreRemove");
     }
+
 
     public Long getId() {
         return id;
@@ -307,50 +327,40 @@ public class Course {
     public void setId(Long id) {
         this.id = id;
     }
-
-    public String getName() {
-        return name;
+    public Long getCourseId() {
+        return courseId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+    public String getStatus() {
+        return status;
     }
 
-    public String getTeacher() {
-        return teacher;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public void setTeacher(String teacher) {
-        this.teacher = teacher;
-    }
 
-    public String getTextBook() {
-        return textBook;
-    }
 
-    public void setTextBook(String textBook) {
-        this.textBook = textBook;
-    }
-
-    public Long getFee() {
-        return fee;
-    }
-
-    public void setFee(Long fee) {
-        this.fee = fee;
-    }
 
 }
+
 ```
 - Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
 ```
 package lecture;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-public interface CourseRepository extends PagingAndSortingRepository<Course, Long> {
+@RepositoryRestResource(collectionResourceRel="advertisements", path="advertisements")
+public interface AdvertisementRepository extends PagingAndSortingRepository<Advertisement, Long>{
+
 
 }
+
 ```
 
 - 적용 후 REST API 의 테스트
