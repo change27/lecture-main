@@ -19,7 +19,7 @@ spring:
           predicates:
             - Path=/payments/**, /payment/**
         - id: advertisement
-          uri: http://localhost:8084
+          uri: http://localhost:8085
           predicates:
             - Path=/advertisements/**, /advertisement/**, /inquiryAdversises/**
       globalcors:

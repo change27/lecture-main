@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: consumer
-          image: 855196134209.dkr.ecr.us-east-1.amazonaws.com/lecture-consumer:latest
+          image: 879772956301.dkr.ecr.eu-central-1.amazonaws.com/lecture-consumer:latest
           resources:
             limits:
               cpu: 500m
