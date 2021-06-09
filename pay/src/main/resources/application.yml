@@ -43,9 +43,9 @@ spring:
   profiles: docker
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql-1623079150.mysql.svc.cluster.local:3306/paydb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://mysql-1623203575.mysql.svc.cluster.local:3306/paydb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: heZUlzz5Kj
+    password: j4URe9OEjt
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
